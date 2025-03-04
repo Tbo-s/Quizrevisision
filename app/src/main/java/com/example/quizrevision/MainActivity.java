@@ -6,6 +6,7 @@ import android.content.Intent;
 import androidx.activity.EdgeToEdge;
 import android.widget.Button;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.room.Room;
 
 public class MainActivity extends AppCompatActivity {
     @Override
