@@ -1,0 +1,18 @@
+<resources>
+    <string name="app_name">Quiz Revision</string>
+    <string name="button_quiz">Quiz</string>
+    <string name="button_gallery">Gallery</string>
+    <string name="button_submit">Submit</string>
+    <string name="button_next">Next</string>
+    <string name="button_addImage">Add image</string>
+    <string name="button_endQuiz">End quiz</string>
+    <string name="button_exit">Exit</string>
+
+    <string name="quiz_task">What is the correct name?</string>
+    <string name="quiz_score">Score: %1$d/%2$d (%3$s)</string>
+    <string name="correct">Correct!</string>
+    <string name="quiz_incorrect">Incorrect! the correct answer is: %1$s</string>
+    <string name="quiz_score_init">start answering to get percentage</string>
+    <string name="title_activity_quiz">QuizActivity</string>
+
+</resources>
