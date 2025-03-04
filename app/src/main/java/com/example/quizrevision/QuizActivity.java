@@ -1,7 +1,6 @@
 package com.example.quizrevision;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.View;
 import android.widget.Button;
 
 import androidx.activity.EdgeToEdge;
@@ -16,13 +15,10 @@ public class QuizActivity extends AppCompatActivity {
 
         Log.i("QUIZ_APP", "Loaded quiz");
 
-        Button button = (Button)findViewById(R.id.buttonQuizExit);
-        button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Log.i("QUIZ_APP", "Exiting quiz");
-                finish();
-            }
+        Button button = findViewById(R.id.buttonQuizExit);
+        button.setOnClickListener(v -> {
+            Log.i("QUIZ_APP", "Exiting quiz");
+            finish();
         });
 
     }
