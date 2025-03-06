@@ -14,5 +14,8 @@
     <string name="quiz_incorrect">Incorrect! the correct answer is: %1$s</string>
     <string name="quiz_score_init">start answering to get percentage</string>
     <string name="title_activity_quiz">QuizActivity</string>
+    <string name="sort_asc"><![CDATA[Sort A->Z]]></string>
+    <string name="sort_desc"><![CDATA[Sort Z->A]]></string>
+    <string name="add_picture">Add a picture</string>
 
 </resources>

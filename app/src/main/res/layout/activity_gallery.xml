@@ -41,7 +41,7 @@
                 android:id="@+id/btnPickImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Addpicture"
+                android:text="@string/add_picture"
                 android:backgroundTint="@color/blueBlack"
                 android:textColor="@color/white"
                 android:textStyle="bold"
@@ -53,15 +53,28 @@
 
             <!-- Second button in the chain: Sort -->
             <Button
-                android:id="@+id/Sortbutton"
+                android:id="@+id/btnSortDesc"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Sort"
+                android:text="@string/sort_desc"
                 android:backgroundTint="@color/blueBlack"
                 android:textColor="@color/white"
                 android:textStyle="bold"
                 app:layout_constraintStart_toEndOf="@+id/btnPickImage"
-                app:layout_constraintEnd_toStartOf="@+id/Quizbutton"
+                app:layout_constraintEnd_toStartOf="@+id/btnSortAsc"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent" />
+
+            <Button
+                android:id="@+id/btnSortAsc"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/sort_asc"
+                android:backgroundTint="@color/blueBlack"
+                android:textColor="@color/white"
+                android:textStyle="bold"
+                app:layout_constraintStart_toEndOf="@+id/btnSortDesc"
+                app:layout_constraintEnd_toStartOf="@+id/buttonGalleryExit"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />
 
@@ -70,11 +83,11 @@
                 android:id="@+id/buttonGalleryExit"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Quiz"
+                android:text="@string/button_exit"
                 android:backgroundTint="@color/blueBlack"
                 android:textColor="@color/white"
                 android:textStyle="bold"
-                app:layout_constraintStart_toEndOf="@+id/Sortbutton"
+                app:layout_constraintStart_toEndOf="@+id/btnSortAsc"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent" />

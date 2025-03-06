@@ -18,12 +18,14 @@ import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import androidx.activity.result.ActivityResult;
 import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
 import androidx.activity.result.contract.ActivityResultContracts;
+import androidx.room.Room;
 
 import java.util.List;
 
@@ -31,6 +33,9 @@ public class GalleryActivity extends AppCompatActivity {
     GalleryViewModel model;
 
     Button pickImageButton;
+    Button sortAsc;
+    Button sortDesc;
+
     ActivityResultLauncher<Intent> resultLauncher;
 
 
@@ -40,15 +45,15 @@ public class GalleryActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_gallery);
 
-        model = new ViewModelProvider(this).get(GalleryViewModel.class);
-        final Observer<List<GalleryItem>> galleryObserver = new Observer<List<GalleryItem>>() {
+        model = new ViewModelProvider(
+                this,
+                ViewModelProvider.Factory.from(GalleryViewModel.initializer)
+        ).get(GalleryViewModel.class);
 
-            @Override
-            public void onChanged(List<GalleryItem> galleryItems) {
-                // todo update UI
-            }
+        final Observer<GalleryUiState> galleryObserver = uiState -> {
+            // todo update UI
         };
-        model.getImages().observe(this, galleryObserver);
+        model.getUiState().observe(this, galleryObserver);
 
         Log.i("QUIZ_APP", "Loaded gallery");
 
@@ -58,6 +63,9 @@ public class GalleryActivity extends AppCompatActivity {
             finish();
         });
 
+        pickImageButton = findViewById(R.id.btnPickImage);
+        sortAsc = findViewById(R.id.btnSortAsc);
+        sortDesc = findViewById(R.id.btnSortDesc);
 
         registerResult();
 
@@ -66,6 +74,17 @@ public class GalleryActivity extends AppCompatActivity {
             pickImageButton.setOnClickListener(view -> pickImage());
         }
 
+        sortAsc.setOnClickListener(v -> {
+            model.sortAscending();
+        });
+        sortDesc.setOnClickListener(v -> {
+            model.sortDescending();
+        });
+
+        RecyclerView recyclerView = findViewById(R.id.rycyclerview);
+        DogRecycleViewAdapter adapter = new DogRecycleViewAdapter(model);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
     }
 
@@ -109,7 +128,10 @@ public class GalleryActivity extends AppCompatActivity {
                 if (!name.isEmpty()) {
 //                    model.add(new gallerymodel(name, imageUri));
 //                    adapter.notifyItemInserted(galleryModels.size() - 1);
-                    // todo
+                    GalleryItem item = new GalleryItem();
+                    item.name = name;
+                    item.uri = String.valueOf(imageUri);
+                    model.addItem(item);
                 } else {
                     Toast.makeText(GalleryActivity.this, "Name must not be empty", Toast.LENGTH_SHORT).show();
                 }

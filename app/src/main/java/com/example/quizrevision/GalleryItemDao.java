@@ -1,5 +1,6 @@
 package com.example.quizrevision;
 
+import androidx.lifecycle.LiveData;
 import androidx.room.Dao;
 import androidx.room.Delete;
 import androidx.room.Insert;
@@ -12,8 +13,6 @@ public interface GalleryItemDao {
     @Query("SELECT * FROM GalleryItem")
     List<GalleryItem> getAll();
 
-    @Query("SELECT * FROM GalleryItem WHERE name LIKE :name LIMIT 1")
-    GalleryItem findByName(String name);
 
     @Insert
     void insertAll(GalleryItem... items);
