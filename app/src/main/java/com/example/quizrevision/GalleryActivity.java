@@ -31,6 +31,7 @@ import java.util.List;
 
 public class GalleryActivity extends AppCompatActivity {
     GalleryViewModel model;
+    DogRecycleViewAdapter adapter;
 
     Button pickImageButton;
     Button sortAsc;
@@ -45,6 +46,10 @@ public class GalleryActivity extends AppCompatActivity {
         EdgeToEdge.enable(this);
         setContentView(R.layout.activity_gallery);
 
+        Uri imageUri = Uri.parse("android.resource://com.example.quizrevision/drawable/eagon.jpg");
+
+        int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+        getApplicationContext().getContentResolver().takePersistableUriPermission(imageUri, flag);
         model = new ViewModelProvider(
                 this,
                 ViewModelProvider.Factory.from(GalleryViewModel.initializer)
@@ -52,6 +57,7 @@ public class GalleryActivity extends AppCompatActivity {
 
         final Observer<GalleryUiState> galleryObserver = uiState -> {
             // todo update UI
+            adapter.notifyDataSetChanged();
         };
         model.getUiState().observe(this, galleryObserver);
 
@@ -82,7 +88,7 @@ public class GalleryActivity extends AppCompatActivity {
         });
 
         RecyclerView recyclerView = findViewById(R.id.rycyclerview);
-        DogRecycleViewAdapter adapter = new DogRecycleViewAdapter(model);
+        adapter = new DogRecycleViewAdapter(model);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(this));
 
@@ -98,15 +104,12 @@ public class GalleryActivity extends AppCompatActivity {
     private void registerResult() {
         resultLauncher = registerForActivityResult(
                 new ActivityResultContracts.StartActivityForResult(),
-                new ActivityResultCallback<ActivityResult>() {
-                    @Override
-                    public void onActivityResult(ActivityResult result) {
-                        try {
-                            Uri imageUri = result.getData().getData();
-                            showNameDialog(imageUri);
-                        } catch (Exception e) {
-                            Toast.makeText(GalleryActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
-                        }
+                result -> {
+                    try {
+                        Uri imageUri = result.getData().getData();
+                        showNameDialog(imageUri);
+                    } catch (Exception e) {
+                        Toast.makeText(GalleryActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
                     }
                 }
         );
@@ -128,10 +131,13 @@ public class GalleryActivity extends AppCompatActivity {
                 if (!name.isEmpty()) {
 //                    model.add(new gallerymodel(name, imageUri));
 //                    adapter.notifyItemInserted(galleryModels.size() - 1);
+                    int flag = Intent.FLAG_GRANT_READ_URI_PERMISSION;
+                    getApplicationContext().getContentResolver().takePersistableUriPermission(imageUri, flag);
                     GalleryItem item = new GalleryItem();
                     item.name = name;
-                    item.uri = String.valueOf(imageUri);
+                    item.uri = imageUri.toString();
                     model.addItem(item);
+//                    adapter.notifyItemInserted();
                 } else {
                     Toast.makeText(GalleryActivity.this, "Name must not be empty", Toast.LENGTH_SHORT).show();
                 }

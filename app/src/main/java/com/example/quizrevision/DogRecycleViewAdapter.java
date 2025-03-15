@@ -1,5 +1,6 @@
 package com.example.quizrevision;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -52,6 +53,7 @@ public class DogRecycleViewAdapter extends RecyclerView.Adapter<DogRecycleViewAd
             int currentPosition = holder.getAbsoluteAdapterPosition();
             if (currentPosition != RecyclerView.NO_POSITION) {
                 viewModel.removeItem(currentPosition);
+                notifyItemRemoved(currentPosition);
             }
         });
     }

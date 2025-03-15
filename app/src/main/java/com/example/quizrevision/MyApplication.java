@@ -1,7 +1,6 @@
 package com.example.quizrevision;
 
 import android.app.Application;
-import android.view.View;
 
 import androidx.room.Room;
 
