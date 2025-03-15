@@ -28,7 +28,7 @@ public abstract class AppDatabase extends RoomDatabase {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
                             AppDatabase.class, "my-database")
-//                            .addCallback(sRoomDatabaseCallback)
+                            .addCallback(sRoomDatabaseCallback)
                             .allowMainThreadQueries()
                             .build();
                     }
@@ -45,12 +45,13 @@ public abstract class AppDatabase extends RoomDatabase {
             databaseWriteExecutor.execute(() -> {
                 GalleryItemDao dao = INSTANCE.galleryItemDao();
                 List<GalleryItem> items = dao.getAll();
-                if (items == null) {
-                    GalleryItem item = new GalleryItem();
-                    item.name = "Eagon";
-                    item.uri = String.valueOf(Uri.parse("android.resource://com.example.quizrevision/drawable/eagon.jpg"));
-                    dao.insertAll(item);
-                }
+                items.forEach(dao::delete);
+//                if (items == null) {
+//                    GalleryItem item = new GalleryItem();
+//                    item.name = "Eagon";
+//                    item.uri = String.valueOf(Uri.parse("android.resource://com.example.quizrevision/drawable/eagon.jpg"));
+//                    dao.insertAll(item);
+//                }
             });
         }
     };

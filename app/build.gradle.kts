@@ -45,6 +45,8 @@ dependencies {
     implementation(libs.androidx.recyclerview)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
+    implementation(libs.androidx.activity)
+    implementation(libs.androidx.fragment)
     implementation(libs.androidx.cardview)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)

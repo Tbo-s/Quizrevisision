@@ -1,6 +1,8 @@
 [versions]
+activity = "1.10.1"
 agp = "8.8.0"
 cardview = "1.0.0"
+fragment = "1.8.6"
 kotlin = "2.0.0"
 coreKtx = "1.15.0"
 junit = "4.13.2"
@@ -14,8 +16,10 @@ constraintlayout = "2.2.1"
 recyclerview = "1.4.0"
 
 [libraries]
+androidx-activity = { module = "androidx.activity:activity", version.ref = "activity" }
 androidx-cardview = { module = "androidx.cardview:cardview", version.ref = "cardview" }
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
+androidx-fragment = { module = "androidx.fragment:fragment", version.ref = "fragment" }
 androidx-recyclerview = { module = "androidx.recyclerview:recyclerview", version.ref = "recyclerview" }
 androidx-recyclerview-selection = { module = "androidx.recyclerview:recyclerview-selection", version.ref = "recyclerview" }
 junit = { group = "junit", name = "junit", version.ref = "junit" }
