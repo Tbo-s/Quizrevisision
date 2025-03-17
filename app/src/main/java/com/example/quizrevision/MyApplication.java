@@ -2,23 +2,32 @@ package com.example.quizrevision;
 
 import android.app.Application;
 
-import androidx.room.Room;
-
 public class MyApplication extends Application {
-    AppDatabase db;
+    private static MyApplication instance;
+    private AppDatabase db;
+    private GalleryItemRepository repository;
 
-    AppDatabase getDb() {
-        if (db == null) {
-            db =
-                    Room.databaseBuilder(getApplicationContext(), AppDatabase.class, "database-name").build();
-        }
-        return db;
+    @Override
+    public void onCreate() {
+        super.onCreate();
+        instance = this;
+        db = AppDatabase.getDatabase(getApplicationContext());
     }
-    GalleryItemRepository repository;
+
+    public static MyApplication getInstance() {
+        return instance;
+    }
+
+    // Hiermee krijg je via de applicatie een repository
     public GalleryItemRepository getGalleryItemRepository() {
         if (repository == null) {
             repository = new SimpleGalleryItemRepository(this);
         }
         return repository;
+    }
+
+    // Voor gebruik in de ViewModel-initializer
+    public static MyApplication getContext() {
+        return instance;
     }
 }

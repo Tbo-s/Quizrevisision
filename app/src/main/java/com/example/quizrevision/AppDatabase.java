@@ -1,16 +1,11 @@
 package com.example.quizrevision;
 
 import android.content.Context;
-import android.content.Intent;
-import android.net.Uri;
-
 import androidx.annotation.NonNull;
 import androidx.room.Database;
 import androidx.room.Room;
 import androidx.room.RoomDatabase;
 import androidx.sqlite.db.SupportSQLiteDatabase;
-
-import java.util.List;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -27,11 +22,10 @@ public abstract class AppDatabase extends RoomDatabase {
             synchronized (AppDatabase.class) {
                 if (INSTANCE == null) {
                     INSTANCE = Room.databaseBuilder(context.getApplicationContext(),
-                            AppDatabase.class, "my-database")
+                                    AppDatabase.class, "my-database")
                             .addCallback(sRoomDatabaseCallback)
-                            .allowMainThreadQueries()
                             .build();
-                    }
+                }
             }
         }
         return INSTANCE;
@@ -41,17 +35,19 @@ public abstract class AppDatabase extends RoomDatabase {
         @Override
         public void onCreate(@NonNull SupportSQLiteDatabase db) {
             super.onCreate(db);
-
+            // Voeg ingebouwde items toe bij de eerste creatie
             databaseWriteExecutor.execute(() -> {
                 GalleryItemDao dao = INSTANCE.galleryItemDao();
-                List<GalleryItem> items = dao.getAll();
-                items.forEach(dao::delete);
-//                if (items == null) {
-//                    GalleryItem item = new GalleryItem();
-//                    item.name = "Eagon";
-//                    item.uri = String.valueOf(Uri.parse("android.resource://com.example.quizrevision/drawable/eagon.jpg"));
-//                    dao.insertAll(item);
-//                }
+                GalleryItem item1 = new GalleryItem();
+                item1.name = "Eagon";
+                item1.uri = "android.resource://com.example.quizrevision/drawable/eagon";
+                GalleryItem item2 = new GalleryItem();
+                item2.name = "Buddy";
+                item2.uri = "android.resource://com.example.quizrevision/drawable/buddy";
+                GalleryItem item3 = new GalleryItem();
+                item3.name = "Charlie";
+                item3.uri = "android.resource://com.example.quizrevision/drawable/charlie";
+                dao.insertAll(item1, item2, item3);
             });
         }
     };

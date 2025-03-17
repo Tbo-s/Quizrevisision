@@ -1,14 +1,10 @@
 package com.example.quizrevision;
 
-import static androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.APPLICATION_KEY;
-
 import androidx.lifecycle.LiveData;
 import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
-import androidx.lifecycle.viewmodel.ViewModelInitializer;
-
+import androidx.lifecycle.ViewModelProvider;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 
@@ -18,17 +14,19 @@ public class GalleryViewModel extends ViewModel {
 
     public GalleryViewModel(GalleryItemRepository repository) {
         this.repository = repository;
+        // Gebruik de bestaande data (bijv. de getAll()-lijst) voor de initiële staat
         uiState.setValue(new GalleryUiState(repository.getAll()));
     }
 
-    static final ViewModelInitializer<GalleryViewModel> initializer = new ViewModelInitializer<GalleryViewModel>(
-            GalleryViewModel.class,
-            creationExtras -> {
-                MyApplication app = (MyApplication) creationExtras.get(APPLICATION_KEY);
-                assert app != null;
-                return new GalleryViewModel(app.getGalleryItemRepository());
-            }
-    );
+    // Factory voor het verkrijgen van de ViewModel in de Activity
+    public static final ViewModelProvider.Factory initializer = new ViewModelProvider.Factory() {
+        @Override
+        @SuppressWarnings("unchecked")
+        public <T extends androidx.lifecycle.ViewModel> T create(Class<T> modelClass) {
+            MyApplication app = MyApplication.getContext();
+            return (T) new GalleryViewModel(app.getGalleryItemRepository());
+        }
+    };
 
     public LiveData<GalleryUiState> getUiState() {
         return uiState;
@@ -36,13 +34,13 @@ public class GalleryViewModel extends ViewModel {
 
     public void sortAscending() {
         List<GalleryItem> sorted = Objects.requireNonNull(uiState.getValue()).getImages();
-        sorted.sort((o1, o2) -> o1.name.compareToIgnoreCase(o2.name));
+        Collections.sort(sorted, (o1, o2) -> o1.name.compareToIgnoreCase(o2.name));
         uiState.setValue(new GalleryUiState(sorted));
     }
 
     public void sortDescending() {
         List<GalleryItem> sorted = Objects.requireNonNull(uiState.getValue()).getImages();
-        sorted.sort((o1, o2) -> o2.name.compareToIgnoreCase(o1.name));
+        Collections.sort(sorted, (o1, o2) -> o2.name.compareToIgnoreCase(o1.name));
         uiState.setValue(new GalleryUiState(sorted));
     }
 

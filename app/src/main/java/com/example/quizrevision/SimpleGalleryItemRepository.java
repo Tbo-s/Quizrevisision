@@ -1,26 +1,26 @@
 package com.example.quizrevision;
 
 import android.app.Application;
-
 import androidx.lifecycle.LiveData;
-import androidx.room.Room;
-
-import java.util.Collections;
 import java.util.List;
 
 public class SimpleGalleryItemRepository extends GalleryItemRepository {
 
-    public SimpleGalleryItemRepository(Application application) {
-        this.dao = AppDatabase.getDatabase(application).galleryItemDao();
-    }
+    private final GalleryItemDao dao;
 
-    GalleryItemDao dao;
+    public SimpleGalleryItemRepository(Application application) {
+        dao = AppDatabase.getDatabase(application).galleryItemDao();
+    }
 
     @Override
     public List<GalleryItem> getAll() {
         return dao.getAll();
     }
 
+    @Override
+    public LiveData<List<GalleryItem>> getAllLive() {
+        return dao.getAllLive();
+    }
 
     @Override
     public void insertAll(GalleryItem... items) {

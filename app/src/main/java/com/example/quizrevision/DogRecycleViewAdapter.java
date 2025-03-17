@@ -1,6 +1,5 @@
 package com.example.quizrevision;
 
-import android.content.Intent;
 import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -8,25 +7,22 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
-
 import java.util.Objects;
 
 public class DogRecycleViewAdapter extends RecyclerView.Adapter<DogRecycleViewAdapter.MyViewHolder> {
+
+    private final GalleryViewModel viewModel;
 
     public DogRecycleViewAdapter(GalleryViewModel viewModel) {
         this.viewModel = viewModel;
     }
 
-    GalleryViewModel viewModel;
-
     public static class MyViewHolder extends RecyclerView.ViewHolder {
         ImageView imageView;
         TextView textView;
         Button buttonDelete;
-
 
         public MyViewHolder(@NonNull View itemView) {
             super(itemView);
@@ -47,7 +43,6 @@ public class DogRecycleViewAdapter extends RecyclerView.Adapter<DogRecycleViewAd
     public void onBindViewHolder(@NonNull MyViewHolder holder, int position) {
         GalleryItem item = Objects.requireNonNull(viewModel.getUiState().getValue()).getImages().get(position);
         holder.textView.setText(item.name);
-
         holder.imageView.setImageURI(Uri.parse(item.uri));
         holder.buttonDelete.setOnClickListener(v -> {
             int currentPosition = holder.getAbsoluteAdapterPosition();
@@ -57,7 +52,6 @@ public class DogRecycleViewAdapter extends RecyclerView.Adapter<DogRecycleViewAd
             }
         });
     }
-
 
     @Override
     public int getItemCount() {
