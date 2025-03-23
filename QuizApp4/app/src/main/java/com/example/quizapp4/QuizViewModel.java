@@ -1,4 +1,3 @@
-// QuizViewModel.java
 package com.example.quizapp4;
 
 import androidx.lifecycle.ViewModel;
@@ -8,46 +7,25 @@ public class QuizViewModel extends ViewModel {
     private ArrayList<gallerymodel> images;
     private int answerTotal = 0;
     private int answerCorrect = 0;
-    private String correctName;
-    private int idCorrect;
-    private int idCurrent;
-    // You can also store other quiz state such as the current question index, current options, etc.
 
-    // Getters and setters
-    public ArrayList<gallerymodel> getImages() {
-        return images;
-    }
-    public void setImages(ArrayList<gallerymodel> images) {
-        this.images = images;
-    }
-    public int getAnswerTotal() {
-        return answerTotal;
-    }
-    public void setAnswerTotal(int answerTotal) {
-        this.answerTotal = answerTotal;
-    }
-    public int getAnswerCorrect() {
-        return answerCorrect;
-    }
-    public void setAnswerCorrect(int answerCorrect) {
-        this.answerCorrect = answerCorrect;
-    }
-    public String getCorrectName() {
-        return correctName;
-    }
-    public void setCorrectName(String correctName) {
-        this.correctName = correctName;
-    }
-    public int getIdCorrect() {
-        return idCorrect;
-    }
-    public void setIdCorrect(int idCorrect) {
-        this.idCorrect = idCorrect;
-    }
-    public int getIdCurrent() {
-        return idCurrent;
-    }
-    public void setIdCurrent(int idCurrent) {
-        this.idCurrent = idCurrent;
-    }
+    // New fields to preserve the current question state
+    private gallerymodel currentQuestion;
+    private ArrayList<String> currentOptions;
+    private int correctOptionIndex = -1;
+
+    // Getters and setters for images and score
+    public ArrayList<gallerymodel> getImages() { return images; }
+    public void setImages(ArrayList<gallerymodel> images) { this.images = images; }
+    public int getAnswerTotal() { return answerTotal; }
+    public void setAnswerTotal(int answerTotal) { this.answerTotal = answerTotal; }
+    public int getAnswerCorrect() { return answerCorrect; }
+    public void setAnswerCorrect(int answerCorrect) { this.answerCorrect = answerCorrect; }
+
+    // Getters and setters for the current question
+    public gallerymodel getCurrentQuestion() { return currentQuestion; }
+    public void setCurrentQuestion(gallerymodel currentQuestion) { this.currentQuestion = currentQuestion; }
+    public ArrayList<String> getCurrentOptions() { return currentOptions; }
+    public void setCurrentOptions(ArrayList<String> currentOptions) { this.currentOptions = currentOptions; }
+    public int getCorrectOptionIndex() { return correctOptionIndex; }
+    public void setCorrectOptionIndex(int correctOptionIndex) { this.correctOptionIndex = correctOptionIndex; }
 }
