@@ -84,17 +84,29 @@ public class QuizFragment extends Fragment {
         // Listener for radio group changes
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> idCurrent = checkedId);
 
-        // Set listeners for quiz buttons
+        // Set listener for the Submit button
         buttonSubmit.setOnClickListener(v -> {
             updateScore();
             showAfterAnswer();
+            // Optionally disable the Submit button to prevent multiple submissions
+            buttonSubmit.setEnabled(false);
         });
+
+        // Set listener for the Next button
         buttonNext.setOnClickListener(v -> {
             generateQuestion();
             hideBeforeAnswer();
+            // Re-enable the Submit button for the new question
+            buttonSubmit.setEnabled(true);
         });
+
+        // Add the End Quiz button listener here.
         buttonEnd.setOnClickListener(v -> {
-            // Handle ending the quiz. You could notify the hosting activity, for example.
+            // End the quiz by finishing the current activity.
+            requireActivity().finish();
+            // Alternatively, you could start another activity:
+            // Intent intent = new Intent(getActivity(), MainActivity.class);
+            // startActivity(intent);
         });
 
         // Set initial score display
