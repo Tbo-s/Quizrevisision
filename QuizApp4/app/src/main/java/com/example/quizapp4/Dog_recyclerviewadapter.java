@@ -11,6 +11,10 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.test.espresso.UiController;
+import androidx.test.espresso.ViewAction;
+
+import org.hamcrest.Matcher;
 
 import java.util.ArrayList;
 
@@ -82,5 +86,30 @@ public class Dog_recyclerviewadapter extends RecyclerView.Adapter<Dog_recyclervi
     // Interface for deletion callbacks.
     public interface OnItemDeleteListener {
         void onDeleteItem(gallerymodel item, int position);
+    }
+
+    /**
+     * from <a href="https://stackoverflow.com/questions/28476507/using-espresso-to-click-view-inside-recyclerview-item">...</a>
+     */
+    public static class DogRecyclerViewAction {
+        public static ViewAction clickChildViewWithId(final int id) {
+            return new ViewAction() {
+                @Override
+                public Matcher<View> getConstraints() {
+                    return null;
+                }
+
+                @Override
+                public String getDescription() {
+                    return "Click on a child view with specified id";
+                }
+
+                @Override
+                public void perform(UiController uiController, View view) {
+                    View v = view.findViewById(id);
+                    v.performClick();
+                }
+            };
+        }
     }
 }
