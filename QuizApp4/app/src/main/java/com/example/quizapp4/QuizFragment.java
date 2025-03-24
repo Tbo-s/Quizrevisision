@@ -105,8 +105,7 @@ public class QuizFragment extends Fragment {
             // End the quiz by finishing the current activity.
             requireActivity().finish();
             // Alternatively, you could start another activity:
-            // Intent intent = new Intent(getActivity(), MainActivity.class);
-            // startActivity(intent);
+
         });
 
         // Set initial score display
