@@ -15,6 +15,7 @@ import static androidx.test.espresso.intent.matcher.IntentMatchers.hasAction;
 import static androidx.test.espresso.intent.matcher.IntentMatchers.hasComponent;
 import static androidx.test.espresso.matcher.RootMatchers.isDialog;
 import static androidx.test.espresso.matcher.ViewMatchers.isDisplayed;
+import static androidx.test.espresso.matcher.ViewMatchers.withHint;
 import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
@@ -86,13 +87,13 @@ public class MainActivityTest {
     @Test
     public void testAddItem() {
         Intent resultIntent = new Intent(MediaStore.ACTION_PICK_IMAGES);
-        Uri uri = Uri.parse("android.resource://com.example.quizapp4/" + R.drawable.kahoot1);
+        Uri uri = Uri.parse("android.resource://com.example.quizapp4/" + R.drawable.hank);
         resultIntent.setData(uri);
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(MainActivity.RESULT_OK, resultIntent);
         intending(hasAction(MediaStore.ACTION_PICK_IMAGES)).respondWith(result);
         int cntBefore = getItemCount();
         onView(withId(R.id.btnPickImage)).perform(click());
-        onView(withText("Enter a name for the image")).inRoot(isDialog()).check(matches(isDisplayed())).perform(typeText("newDog"));
+        onView(withHint("Name")).inRoot(isDialog()).check(matches(isDisplayed())).perform(typeText("newDog"));
         onView(withId(android.R.id.button1)).perform(click());
         int cntAfter = getItemCount();
         assertEquals(cntBefore+1, cntAfter);
