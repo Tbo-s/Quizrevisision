@@ -86,7 +86,7 @@ public class MainActivityTest {
     @Test
     public void testAddItem() {
         Intent resultIntent = new Intent(MediaStore.ACTION_PICK_IMAGES);
-        Uri uri = Uri.parse("android.resource://com.example.quizapp4/" + R.drawable.kahoot1);
+        Uri uri = Uri.parse("android.resource://com.example.quizapp4/" + R.drawable.eagon);
         resultIntent.setData(uri);
         Instrumentation.ActivityResult result = new Instrumentation.ActivityResult(MainActivity.RESULT_OK, resultIntent);
         intending(hasAction(MediaStore.ACTION_PICK_IMAGES)).respondWith(result);
