@@ -227,8 +227,9 @@ public class MainActivity extends AppCompatActivity {
                 new ActivityResultCallback<ActivityResult>() {
                     @Override
                     public void onActivityResult(ActivityResult result) {
+                        Uri imageUri = null;
                         try {
-                            Uri imageUri = result.getData().getData();
+                            imageUri = result.getData().getData();
                             if (imageUri != null) {
                                 // Persist the URI permission so the image remains accessible after a reboot.
                                 int takeFlags = result.getData().getFlags() &
@@ -236,7 +237,12 @@ public class MainActivity extends AppCompatActivity {
                                 getContentResolver().takePersistableUriPermission(imageUri, Intent.FLAG_GRANT_READ_URI_PERMISSION);
                             }
                             showNameDialog(imageUri);
+                        } catch (SecurityException e) {
+                            Log.d("QUIZAPPMAIN", e.getMessage());
+                            Toast.makeText(MainActivity.this, "security issue", Toast.LENGTH_SHORT).show();
+                            showNameDialog(imageUri);
                         } catch (Exception e) {
+                            Log.d("QUIZAPPMAIN", e.getMessage());
                             Toast.makeText(MainActivity.this, "No image selected", Toast.LENGTH_SHORT).show();
                         }
                     }
