@@ -5,21 +5,21 @@
 | Navigate to quiz | |
 |--|----------|
 | Source | [app/src/androidTest/java/com/example/quizapp4/MainActivityTest.java](https://github.com/Tbo-s/Quizrevisision/blob/26527c4100e7c47abbcae2f23a8aada62383313c/QuizApp4/app/src/androidTest/java/com/example/quizapp4/MainActivityTest.java#L65) |
-| Description | When clicked on the "Quiz" button in the gallery, the Quiz activity should be started. |
+| Description | When the user clicks on the "Quiz" button in the gallery, the Quiz activity should be started. |
 | Status | Passed |
 -------------------
 
 | Add image to gallery | |
 |--|----------|
 | Source | [app/src/androidTest/java/com/example/quizapp4/MainActivityTest.java](https://github.com/Tbo-s/Quizrevisision/blob/26527c4100e7c47abbcae2f23a8aada62383313c/QuizApp4/app/src/androidTest/java/com/example/quizapp4/MainActivityTest.java#L88) |
-| Description | When clicked on the "Add picture" button in the gallery, the user should be prompted to choose an image and then write the name associated with it. This should result in a new image added to the gallery. |
+| Description | When the user clicks on the "Add picture" button in the gallery, the user should be prompted to choose an image and then write the name associated with it. This should result in a new image added to the gallery. |
 | Status | Passed |
 
 
 | Delete image from gallery | |
 |--|----------|
 | Source | [app/src/androidTest/java/com/example/quizapp4/MainActivityTest.java](https://github.com/Tbo-s/Quizrevisision/blob/26527c4100e7c47abbcae2f23a8aada62383313c/QuizApp4/app/src/androidTest/java/com/example/quizapp4/MainActivityTest.java#L71) |
-| Description | When clicked on the "-" button next to an image in the gallery, the image should be removed. |
+| Description | When the user clicks on the "-" button next to an image in the gallery, the image should be removed. |
 | Status | Passed |
 -------------------
 
