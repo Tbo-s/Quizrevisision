@@ -39,6 +39,22 @@ public class QuizFragment extends Fragment {
         // Required empty public constructor
     }
 
+    public QuizViewModel getViewModel() {
+        return viewModel;
+    }
+
+    public String getCorrectName() {
+        return correctName;
+    }
+
+    public int getIdCorrect() {
+        return idCorrect;
+    }
+
+    public int getIdCurrent() {
+        return idCurrent;
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

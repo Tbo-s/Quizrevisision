@@ -42,6 +42,7 @@ dependencies {
     implementation(libs.room.runtime)
     implementation(libs.androidx.espresso.contrib)
     testImplementation(libs.junit)
+    debugImplementation(libs.androidx.fragment.testing) // build failed when it was androidTestImplementation...
     androidTestImplementation(libs.ext.junit)
     androidTestImplementation(libs.espresso.core)
     androidTestImplementation(libs.androidx.espresso.intents)
