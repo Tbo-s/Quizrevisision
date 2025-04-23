@@ -1,5 +1,11 @@
 package com.example.quizapp4;
 
+import android.content.Context;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorEventListener2;
+import android.hardware.SensorManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -10,6 +16,7 @@ import android.widget.ImageView;
 import android.widget.RadioButton;
 import android.widget.RadioGroup;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import androidx.fragment.app.Fragment;
 import androidx.lifecycle.ViewModelProvider;
@@ -21,51 +28,40 @@ import java.util.Random;
 
 public class QuizFragment extends Fragment {
 
-    // UI elements
     private ImageView imageView;
     private RadioGroup radioGroup;
     private RadioButton option1, option2, option3;
     private Button buttonSubmit, buttonNext, buttonEnd;
     private TextView textResult, textScore;
 
-    // ViewModel to persist quiz state
     private QuizViewModel viewModel;
     private ArrayList<gallerymodel> images;
     private Random rand = new Random();
     private String correctName;
     private int idCorrect, idCurrent;
 
-    public QuizFragment() {
-        // Required empty public constructor
-    }
+    // Sensor shake detection
+    private SensorManager sensorManager;
+    private Sensor accelerometer;
+    private SensorEventListener shakeListener;
 
-    public QuizViewModel getViewModel() {
-        return viewModel;
-    }
+    // Batching
+    private Button buttonFlush;
+    private TextView textFlushLog;
+    private SensorEventListener2 batchListener;
+    private int batchedEventCount = 0;
 
-    public String getCorrectName() {
-        return correctName;
-    }
 
-    public int getIdCorrect() {
-        return idCorrect;
-    }
-
-    public int getIdCurrent() {
-        return idCurrent;
-    }
+    public QuizFragment() {}
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        // Inflate the layout. Android will automatically load the appropriate layout
-        // from res/layout (portrait) or res/layout-land (landscape) if available.
         return inflater.inflate(R.layout.quiz_fragment, container, false);
     }
 
     @Override
     public void onViewCreated(View view, Bundle savedInstanceState) {
-        // Bind UI elements
         imageView = view.findViewById(R.id.imageViewQuiz);
         radioGroup = view.findViewById(R.id.radioQuizAnswers);
         option1 = view.findViewById(R.id.buttonQuizOption1);
@@ -77,16 +73,13 @@ public class QuizFragment extends Fragment {
         textResult = view.findViewById(R.id.textQuizResult);
         textScore = view.findViewById(R.id.textQuizScore);
 
-        // Get the ViewModel from the hosting Activity
         viewModel = new ViewModelProvider(requireActivity()).get(QuizViewModel.class);
 
-        // Initialize images if not yet set
         if (viewModel.getImages() == null) {
             ArrayList<gallerymodel> imgList = null;
             if (getArguments() != null) {
                 imgList = (ArrayList<gallerymodel>) getArguments().getSerializable("galleryList");
             }
-            // If there are fewer than 3 images, use default items
             if (imgList == null || imgList.size() < 3) {
                 imgList = new ArrayList<>();
                 imgList.add(new gallerymodel("Aegon", R.drawable.eagon));
@@ -97,53 +90,127 @@ public class QuizFragment extends Fragment {
         }
         images = viewModel.getImages();
 
-        // Listener for radio group changes
         radioGroup.setOnCheckedChangeListener((group, checkedId) -> idCurrent = checkedId);
 
-        // Set listener for the Submit button
         buttonSubmit.setOnClickListener(v -> {
             updateScore();
             showAfterAnswer();
-            // Optionally disable the Submit button to prevent multiple submissions
             buttonSubmit.setEnabled(false);
         });
 
-        // Set listener for the Next button
         buttonNext.setOnClickListener(v -> {
             generateQuestion();
             hideBeforeAnswer();
-            // Re-enable the Submit button for the new question
             buttonSubmit.setEnabled(true);
         });
 
-        // Add the End Quiz button listener here.
-        buttonEnd.setOnClickListener(v -> {
-            // End the quiz by finishing the current activity.
-            requireActivity().finish();
-            // Alternatively, you could start another activity:
+        buttonEnd.setOnClickListener(v -> requireActivity().finish());
 
-        });
-
-        // Set initial score display
         textScore.setText(getString(R.string.quiz_score, viewModel.getAnswerCorrect(),
                 viewModel.getAnswerTotal(), getString(R.string.quiz_score_init)));
 
-        // Restore the current question if it exists; otherwise, generate a new one.
         if (viewModel.getCurrentQuestion() == null) {
             generateQuestion();
         } else {
             restoreQuestion();
         }
+
+        // --- Shake detection setup ---
+        sensorManager = (SensorManager) requireActivity().getSystemService(Context.SENSOR_SERVICE);
+        accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        shakeListener = new SensorEventListener() {
+            private static final float SHAKE_THRESHOLD_GRAVITY = 5F;
+            private static final int SHAKE_SLOP_TIME_MS = 500;
+            private long lastShakeTime = 0;
+
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                float x = event.values[0];
+                float y = event.values[1];
+                float z = event.values[2];
+
+                float gX = x / SensorManager.GRAVITY_EARTH;
+                float gY = y / SensorManager.GRAVITY_EARTH;
+                float gZ = z / SensorManager.GRAVITY_EARTH;
+
+                float gForce = (float) Math.sqrt(gX * gX + gY * gY + gZ * gZ);
+
+                if (gForce > SHAKE_THRESHOLD_GRAVITY) {
+                    long now = System.currentTimeMillis();
+                    if (lastShakeTime + SHAKE_SLOP_TIME_MS > now) return;
+                    lastShakeTime = now;
+
+                    // Skip to next question without answering
+                    generateQuestion();
+                    hideBeforeAnswer();
+                    buttonSubmit.setEnabled(true);
+
+                    Toast.makeText(getContext(), "Shake detected! Skipped to next question.", Toast.LENGTH_SHORT).show();
+                }
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+        };
+        buttonFlush = view.findViewById(R.id.buttonFlush);
+        textFlushLog = view.findViewById(R.id.textFlushLog);
+
+        Sensor accelerometerBatch = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+        batchListener = new SensorEventListener2() {
+            @Override
+            public void onSensorChanged(SensorEvent event) {
+                batchedEventCount++;
+            }
+
+            @Override
+            public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+            @Override
+            public void onFlushCompleted(Sensor sensor) {
+                requireActivity().runOnUiThread(() -> {
+                    textFlushLog.setText("Batched Events: " + batchedEventCount);
+                    Toast.makeText(getContext(), "Flush complete!", Toast.LENGTH_SHORT).show();
+                    batchedEventCount = 0; // reset for next round
+                });
+            }
+        };
+
+// Register the sensor with batching (5s latency)
+        sensorManager.registerListener(
+                batchListener,
+                accelerometerBatch,
+                SensorManager.SENSOR_DELAY_NORMAL,
+                5_000_000 // 5 seconds in microseconds
+        );
+
+// Flush button manually triggers delivery of batched events
+        buttonFlush.setOnClickListener(v -> {
+            sensorManager.flush(batchListener);
+        });
+
+
     }
 
-    /**
-     * Generates a new quiz question and saves its state in the ViewModel.
-     */
+    @Override
+    public void onResume() {
+        super.onResume();
+        if (sensorManager != null && accelerometer != null && shakeListener != null) {
+            sensorManager.registerListener(shakeListener, accelerometer, SensorManager.SENSOR_DELAY_UI);
+        }
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        if (sensorManager != null && shakeListener != null) {
+            sensorManager.unregisterListener(shakeListener);
+        }
+    }
+
     private void generateQuestion() {
         int size = images.size();
-        if (size < 3) return; // Safety check
+        if (size < 3) return;
 
-        // Select the correct item and two distractors randomly.
         int correctIndex = rand.nextInt(size);
         gallerymodel correctItem = images.get(correctIndex);
         correctName = correctItem.getNameOfDog();
@@ -159,19 +226,16 @@ public class QuizFragment extends Fragment {
         String distractor1 = images.get(distractor1Index).getNameOfDog();
         String distractor2 = images.get(distractor2Index).getNameOfDog();
 
-        // Prepare and shuffle options.
         ArrayList<String> options = new ArrayList<>();
         options.add(correctName);
         options.add(distractor1);
         options.add(distractor2);
         Collections.shuffle(options);
 
-        // Set the options on the radio buttons.
         option1.setText(options.get(0));
         option2.setText(options.get(1));
         option3.setText(options.get(2));
 
-        // Determine which option is correct.
         int correctOptionIndex = options.indexOf(correctName);
         if (correctOptionIndex == 0) {
             idCorrect = option1.getId();
@@ -181,24 +245,19 @@ public class QuizFragment extends Fragment {
             idCorrect = option3.getId();
         }
 
-        // Display the corresponding image.
         Uri uri = correctItem.getImageUri();
         if (uri != null) {
             imageView.setImageURI(uri);
         } else {
             imageView.setImageResource(correctItem.getImageResource());
         }
-        radioGroup.clearCheck();
 
-        // Save the current question in the ViewModel.
+        radioGroup.clearCheck();
         viewModel.setCurrentQuestion(correctItem);
         viewModel.setCurrentOptions(options);
         viewModel.setCorrectOptionIndex(correctOptionIndex);
     }
 
-    /**
-     * Restores the current question state from the ViewModel.
-     */
     private void restoreQuestion() {
         gallerymodel current = viewModel.getCurrentQuestion();
         if (current == null) return;
@@ -225,19 +284,14 @@ public class QuizFragment extends Fragment {
         } else {
             imageView.setImageResource(current.getImageResource());
         }
+
         radioGroup.clearCheck();
     }
 
-    /**
-     * Checks if the selected answer is correct.
-     */
     private boolean wasCorrect() {
         return idCorrect == idCurrent;
     }
 
-    /**
-     * Updates the score and displays a result.
-     */
     private void updateScore() {
         viewModel.setAnswerTotal(viewModel.getAnswerTotal() + 1);
         if (wasCorrect()) {
@@ -251,9 +305,6 @@ public class QuizFragment extends Fragment {
         textScore.setText(getString(R.string.quiz_score, viewModel.getAnswerCorrect(), viewModel.getAnswerTotal(), formattedPercentage));
     }
 
-    /**
-     * Hides elements that should not be visible before answering.
-     */
     private void hideBeforeAnswer() {
         textResult.setVisibility(View.INVISIBLE);
         buttonEnd.setVisibility(View.INVISIBLE);
@@ -261,9 +312,6 @@ public class QuizFragment extends Fragment {
         buttonSubmit.setVisibility(View.VISIBLE);
     }
 
-    /**
-     * Reveals elements after an answer has been given.
-     */
     private void showAfterAnswer() {
         textResult.setVisibility(View.VISIBLE);
         buttonEnd.setVisibility(View.VISIBLE);
